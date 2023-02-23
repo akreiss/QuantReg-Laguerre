@@ -18,6 +18,4 @@ LazyData: true
 Imports:
   nloptr,
   SphericalCubature,
-  Rcpp,
-  RcppArmadillo
 RoxygenNote: 7.2.3

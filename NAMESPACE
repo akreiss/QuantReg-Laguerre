@@ -1,1 +1,6 @@
-exportPattern("^[[:alpha:]]+")
+export(CV_criterion)
+export(laguerre_cross_validation)
+export(laguerre_estimator)
+export(likelihood_polar)
+
+useDynLib("QuantRegLaguerre")

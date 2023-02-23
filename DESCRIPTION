@@ -1,11 +1,23 @@
 Package: QuantRegLaguerre
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Quantile Regression using Laguerre Polynomials
+Version: 0.1
+Authors@R: c(person(given = "Alexander",
+           family = "Kreiss",
+           role = c("aut", "cre"),
+           email = "alexander.kreiss@math.uni-leipzig.de"),
+    person(given = "Van Keilegom",
+           family = "Ingrid",
+           role = c("aut"),
+           email = "ingrid.vankeilegom@kuleuven.be"))
+Description: This package provides functions to compute semi-parametric estimates for the quantile of a distribution from censored data. This is achieved by means of sieve estimator: More precisely an approximation of the true conditional density is fit to the censored data. This includes an adjustment for heteroskedasticity. This estimator is computed using the function laguerre_estimator. In laguerre_cross_validation we also provide a method for cross-validation. The theoretical basis of the functions are given in Kreiss and Van Keilegom (2023).
+URL: https://github.com/akreiss/QuantRegLaguerre
+License: GPL-2
 Encoding: UTF-8
 LazyData: true
+Imports:
+  nloptr,
+  SphericalCubature,
+  Rcpp,
+  RcppArmadillo
+RoxygenNote: 7.2.3

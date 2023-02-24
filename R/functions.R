@@ -229,6 +229,12 @@ likelihood_polar <- function(tau,beta,theta_polar,theta_tilde_polar,lambda_polar
       }
     }
 
+    ## Replace NaN in the derivative by infinities
+    if(is.nan(sum(grad))) {
+      warning("The gradient contains NaN, replace by Inf",immediate.=TRUE)
+      grad[is.nan(grad)] <- Inf
+    }
+
     return(list("objective"=out[[1]],"gradient"=grad))
   }
 }

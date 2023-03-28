@@ -463,7 +463,6 @@ laguerre_bootstrap <- function(Y,Delta,Cov=NULL,tau,sigma0,CV_out,level=0.05,B=2
 
   ##  Do the bootstrap replicates
   for(b in 1:B) {
-    print(b)
     ## Compute sub-sample
     sub_sample_ind <- sample(1:n,n,replace=TRUE)
 

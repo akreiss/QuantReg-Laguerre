@@ -427,6 +427,74 @@ laguerre_cross_validation <- function(Y,Delta,tau,sigma0,print.level=0,maxdim=10
 }
 
 
+#' Bootstrap Confidence Intervals for Laguerre Quantile Estimator
+#'
+#' `laguerre_bootstrap` computes bootstrap confidence intervals for the Laguerre Quantile estimator. This functions requires that `laguerre_cross_validation` has been called previously. Within this function bootstrap replicates are generated and the model is refitted on the sub-sample using the same model dimensions as provided in the fit from `laguerre_cross_validation`.
+#'
+#' @param Y Vector of responses, \code{"length(Y)"} must equal \code{"nrow(Cov)"}
+#' @param Delta Vector of censoring indicators, \code{"Delta[i]=1"} means that observation i is not censored, \code{"length(Delta)"} must equal \code{"length(Y)"}
+#' @param Cov Matrix with covariates: Every row corresponds to an observation, each column corresponds to a covariate. No column of \code{"Cov"} is allowed to be constant, the intercept is added automatically. If no covariates shall be used, this should be set to NULL (the default).
+#' @param tau Quantile of interest, element of (0,1)
+#' @param sigma0 Intercept that is added to the heteroskedasticity function.
+#' @param CV_out An object returned by `laguerre_cross_validation` which was called using the same dataset.
+#' @param level Confidence level to be used in the confidence intervals, the default is 0.05.
+#' @param B Number of boostrap replicates (defaul is 200)
+#' @param trials Number of random starting points for theta, theta_tilde and lambda in the optimization (the default is 32).
+#'
+#' @return The function returns a list containing the elements `conf_int` and `sds`. The element `conf_int` is a matrix of two columns and each row corresponds to one covariate (including the intercept which is in the first row), the reows contain the lower and upper bounds for the respective element-wise confidence intervals, i.e., the probability that correspoding true parameter lies in the respective interval equals marginally 1-level. The entry `sds` contains the estimated standard deviations of sqrt(n)*(beta_hat-beta0), where beta_hat denotes the estimator and beta0 the true parameter.
+#'
+#' @examples n <- 200 # Sample Size
+#' tau <- 0.5 # Quantile Level
+#' beta <- c(2,1) # True parameters
+#' epsilon <- rnorm(n,mean=0,sd=1)-qnorm(tau)
+#' x <- rnorm(n)
+#' T <- beta[1]+x*beta[2]+(0.2+2*(x-0.5)^2)*epsilon
+#' C <- runif(n,min=0,max=7)
+#' Y <- pmin(T,C)
+#' Delta <- as.numeric(T==Y)
+#' LCV <- laguerre_cross_validation(Y,Delta,tau,0.1,Cov=x)
+#' bci <- laguerre_bootstrap(Y,Delta,matrix(x,ncol=1),tau,0.1,LCV)
+#'
+#' @export
+laguerre_bootstrap <- function(Y,Delta,Cov=NULL,tau,sigma0,CV_out,level=0.05,B=200,trials=32) {
+  n <- length(Y)
+  p <- length(CV_out$est$beta)
+  deviances <- matrix(NA,nrow=B,ncol=p)
+
+  ##  Do the bootstrap replicates
+  for(b in 1:B) {
+    print(b)
+    ## Compute sub-sample
+    sub_sample_ind <- sample(1:n,n,replace=TRUE)
+
+    ## Compute Estimate based on subsample
+    sub_est <- laguerre_estimator(CV_out$m,CV_out$m_tilde,CV_out$M,Cov[sub_sample_ind,],Y[sub_sample_ind],Delta[sub_sample_ind],sigma0,tau,CV_out$est$beta,trials)
+
+    ## Save Deviation
+    deviances[b,] <- sqrt(n)*(sub_est$beta-CV_out$est$beta)
+  }
+
+  ## Compute Standard Deviations element-wise
+  sds <- rep(NA,p)
+  for(j in 1:p) {
+    sds[j] <- sd(deviances[,j])
+  }
+
+  ## Compute Confidence Intervals
+  conf_int <- matrix(NA,nrow=p,ncol=2)
+  rownames(conf_int) <- 1:p
+  colnames(conf_int) <- c("LowerBound","UpperBound")
+
+  q <- qnorm(1-level/2)
+  for(j in 1:p) {
+    conf_int[j,1] <- CV_out$est$beta[j]-q*sds[j]/sqrt(n)
+    conf_int[j,2] <- CV_out$est$beta[j]+q*sds[j]/sqrt(n)
+  }
+
+  return(list(conf_int=conf_int,sds=sds))
+}
+
+
 
 
 

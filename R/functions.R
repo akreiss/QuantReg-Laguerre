@@ -441,7 +441,7 @@ laguerre_cross_validation <- function(Y,Delta,tau,sigma0,print.level=0,maxdim=10
 #' @param B Number of boostrap replicates (defaul is 200)
 #' @param trials Number of random starting points for theta, theta_tilde and lambda in the optimization (the default is 32).
 #'
-#' @return The function returns a list containing the elements `conf_int` and `sds`. The element `conf_int` is a matrix of two columns and each row corresponds to one covariate (including the intercept which is in the first row), the reows contain the lower and upper bounds for the respective element-wise confidence intervals, i.e., the probability that correspoding true parameter lies in the respective interval equals marginally 1-level. The entry `sds` contains the estimated standard deviations of sqrt(n)*(beta_hat-beta0), where beta_hat denotes the estimator and beta0 the true parameter.
+#' @return The function returns a list containing the elements `conf_int`, `sds`, `bias` and `quantiles`. The element `conf_int` is a matrix of two columns and each row corresponds to one covariate (including the intercept which is in the first row), the rows contain the lower and upper bounds for the respective element-wise confidence intervals build by estimating asymptotic variances and biases, i.e., the probability that the corresponding true parameter lies in the respective interval equals marginally 1-level. The entry `sds` contains the estimated standard deviations of sqrt(n)*(beta_hat-beta0), where beta_hat denotes the estimator and beta0 the true parameter. Similarly, `bias` is a vector containing the estimated biases, i.e., an estimate for E(beta_hat)-beta_0. `quantiles` is a matrix where each row corresponds to one entry of beta_0 and two columns. The rows contain confidence intervals based on the quantiles of the bootstrap replicates.
 #'
 #' @examples n <- 200 # Sample Size
 #' tau <- 0.5 # Quantile Level
@@ -473,24 +473,33 @@ laguerre_bootstrap <- function(Y,Delta,Cov=NULL,tau,sigma0,CV_out,level=0.05,B=2
     deviances[b,] <- sqrt(n)*(sub_est$beta-CV_out$est$beta)
   }
 
-  ## Compute Standard Deviations element-wise
+  ## Compute Standard Deviations and bias element-wise
   sds <- rep(NA,p)
+  bias <- rep(NA,p)
   for(j in 1:p) {
-    sds[j] <- sd(deviances[,j])
+    sds[j]  <- sd(deviances[,j])
+    bias[j] <- mean(deviances[,j])/sqrt(n)
   }
 
-  ## Compute Confidence Intervals
+  ## Compute Confidence Intervals and Quantiles
   conf_int <- matrix(NA,nrow=p,ncol=2)
+  quantiles <- matrix(NA,nrow=p,ncol=2)
   rownames(conf_int) <- 1:p
+  rownames(quantiles) <- 1:p
   colnames(conf_int) <- c("LowerBound","UpperBound")
+  colnames(quantiles) <- c("level/2","1-level/2")
 
   q <- qnorm(1-level/2)
   for(j in 1:p) {
-    conf_int[j,1] <- CV_out$est$beta[j]-q*sds[j]/sqrt(n)
-    conf_int[j,2] <- CV_out$est$beta[j]+q*sds[j]/sqrt(n)
+    conf_int[j,1] <- CV_out$est$beta[j]-bias[j]-q*sds[j]/sqrt(n)
+    conf_int[j,2] <- CV_out$est$beta[j]-bias[j]+q*sds[j]/sqrt(n)
+
+    sorted_deviances <- sort(deviances[,j])
+    quantiles[j,1] <- CV_out$est$beta[j]-sorted_deviances[round(B*(1-level/2))]/sqrt(n)
+    quantiles[j,2] <- CV_out$est$beta[j]-sorted_deviances[round(B*level/2)]/sqrt(n)
   }
 
-  return(list(conf_int=conf_int,sds=sds))
+  return(list(conf_int=conf_int,sds=sds,bias=bias,quantiles=quantiles))
 }
 
 

@@ -509,7 +509,7 @@ laguerre_bootstrap <- function(Y,Delta,Cov=NULL,tau,sigma0,CV_out,level=0.05,B=2
 
 ## Wrappers for likelihood
 likelihood_wrapper_beta_only <- function(beta,X,Y,Delta,sigma0,tau) {
-  out <- .Call("likelihood",Y,X,as.integer(Delta),beta,sigma0,1,tau,1,1)
+  out <- .Call("likelihood",Y,X,as.integer(Delta),beta,sigma0,rep(1,max(c(1,length(beta)-1))),tau,1,1)
   return(list("objective"=-out[[1]],"gradient"=-out[[2]]))
 }
 likelihood_wrapper_bm <- function(par,X,Y,Delta,sigma0,tau,p,m,m_tilde,M) {

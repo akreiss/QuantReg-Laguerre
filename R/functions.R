@@ -152,7 +152,7 @@ laguerre_estimator <- function(m,m_tilde,M=0,Cov=NULL,Y,Delta,sigma0=0.2,tau,sta
 #'
 #' @param tau Quantile of interest from the interval (0,1)
 #' @param beta Value for the beta parameter (always in Cartesian coordinates)
-#' @param theta_polar,theta_tilde_polar,lambda_polar Angles in spherical coordinates for the corresponding parameters. The radius is always equal to one. If the 1-dim Cartesion coordinate 1 is shall be used, the corresponding parameter has to be set to FALSE.
+#' @param theta_polar,theta_tilde_polar,lambda_polar Angles in spherical coordinates for the corresponding parameters. The radius is always equal to one. If the 1-dim Cartesian coordinate 1 shall be used, the corresponding parameter has to be set to FALSE.
 #' @param X Matrix containing covariates to be used, first column must be an intercept. Each row corresponds to an observation, each column corresponds to a covariate. The number of columns must equal the length of beta.
 #' @param Y Scalar vector of observations, its lenght must equal the number of rows in X.
 #' @param Delta Vector of zeros and ones of the same length as Y. A one indicates that the corresponding observation is uncensored.
@@ -191,9 +191,7 @@ likelihood_polar <- function(tau,beta,theta_polar,theta_tilde_polar,lambda_polar
     lambda <- rep(1,p)
     M <- 0
   } else {
-    if(is.null(dim(lambda_polar))) {
-      lambda_polar <- matrix(lambda_polar,ncol=1)
-    }
+    lambda_polar <- matrix(lambda_polar,ncol=p)
     lambda <- apply(lambda_polar,2,SphericalCubature::polar2rect,r=1)
     M <- dim(lambda_polar)[1]
   }
@@ -225,7 +223,7 @@ likelihood_polar <- function(tau,beta,theta_polar,theta_tilde_polar,lambda_polar
     if(p*M>0) {
       for(k in 1:p) {
         DT <- polar_derivative(lambda_polar[,k])
-        grad[(p+1+m+m_tilde+(k-1)*M+1):(p+1+m+m_tilde+k*M)] <- t(DT)%*%out[[5]]
+        grad[(p+1+m+m_tilde+(k-1)*M+1):(p+1+m+m_tilde+k*M)] <- t(DT)%*%out[[5]][(1+(k-1)*(M+1)):(k*(M+1))]
       }
     }
 
@@ -509,7 +507,7 @@ laguerre_bootstrap <- function(Y,Delta,Cov=NULL,tau,sigma0,CV_out,level=0.05,B=2
 
 ## Wrappers for likelihood
 likelihood_wrapper_beta_only <- function(beta,X,Y,Delta,sigma0,tau) {
-  out <- .Call("likelihood",Y,X,as.integer(Delta),beta,sigma0,1,tau,1,1)
+  out <- .Call("likelihood",Y,X,as.integer(Delta),beta,sigma0,rep(1,max(c(1,length(beta)-1))),tau,1,1)
   return(list("objective"=-out[[1]],"gradient"=-out[[2]]))
 }
 likelihood_wrapper_bm <- function(par,X,Y,Delta,sigma0,tau,p,m,m_tilde,M) {

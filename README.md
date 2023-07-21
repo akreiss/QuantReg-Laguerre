@@ -11,7 +11,7 @@ install_github("akreiss/QuantRegLaguerre")
 library(QuantRegLaguerre)
 ```
 
-Next, we generate a data set. In this example we generate data according to DGP in the preprint.
+Next, we generate a data set. In this example we generate data according to DGP 1 in the preprint.
 
 ```
 n   <- 200 # Number of observations

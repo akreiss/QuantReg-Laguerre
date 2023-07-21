@@ -38,7 +38,7 @@ to find suitable degrees:
 CV_est <- laguerre_cross_validation(Y,Delta,tau,0.2,Cov=x)
 ```
 Finally, to be able to perform inference, we use the boostrap to find confidence intervals. In order to use bootstrap in QuantRegLaguerre it is necessary to first
-run cross-validation and the provide the result to the bootstrap functions. This looks as follows:
+run cross-validation and then provide the result to the bootstrap function. This looks as follows:
 ```
 lag_boot <- laguerre_bootstrap(Y,Delta,matrix(x,ncol=1),tau,0.2,CV_est,level=0.1)
 ```

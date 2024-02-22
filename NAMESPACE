@@ -3,5 +3,6 @@ export(laguerre_cross_validation)
 export(laguerre_estimator)
 export(likelihood_polar)
 export(laguerre_bootstrap)
+export(optimal_quantile_covariance)
 
 useDynLib("QuantRegLaguerre")

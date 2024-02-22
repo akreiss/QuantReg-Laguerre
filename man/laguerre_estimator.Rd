@@ -20,27 +20,42 @@ laguerre_estimator(
 \arguments{
 \item{m, m_tilde}{Integers which specify the model dimension in the density}
 
-\item{M}{Integer which specifies the degree of the heteroskedasticity that is estimated (\code{"M=0"}, the default, fits a homoskedastic model)}
+\item{M}{Integer which specifies the degree of the heteroskedasticity that is
+estimated (\code{"M=0"}, the default, fits a homoskedastic model)}
 
-\item{Cov}{Matrix with covariates: Every row corresponds to an observation, each column corresponds to a covariate. No column of Cov is allowed to be constant, the intercept is added automatically. If no covariates shall be used, this should be set to NULL, the default.}
+\item{Cov}{Matrix with covariates: Every row corresponds to an observation,
+each column corresponds to a covariate. No column of Cov is allowed to be
+constant, the intercept is added automatically. If no covariates shall be
+used, this should be set to NULL, the default.}
 
-\item{Y}{Vector of responses, \code{"length(Y)"} must equal \code{"nrow(Cov)"}}
+\item{Y}{Vector of responses, \code{"length(Y)"} must equal
+\code{"nrow(Cov)"}}
 
-\item{Delta}{Vector of censoring indicators, \code{"Delta[i]=1"} means that observation i is not censored, \code{"length(Delta)"} must equal \code{"length(Y)"}}
+\item{Delta}{Vector of censoring indicators, \code{"Delta[i]=1"} means that
+observation i is not censored, \code{"length(Delta)"} must equal
+\code{"length(Y)"}}
 
-\item{sigma0}{Intercept that is added to the heteroskedasticity function, default is 0.2.}
+\item{sigma0}{Intercept that is added to the heteroskedasticity function,
+default is 0.2.}
 
 \item{tau}{Quantile of interest, element of (0,1)}
 
-\item{starting_beta}{If provided this is the initial value for beta used for the optimization routine, if FALSE, the default, a starting value is computed by letting \code{"m=m_tilde=0"}}
+\item{starting_beta}{If provided this is the initial value for beta used for
+the optimization routine, if FALSE, the default, a starting value is
+computed by letting \code{"m=m_tilde=0"}}
 
-\item{trials}{Number of random starting points for theta, theta_tilde and lambda in the optimization (default is 32)}
+\item{trials}{Number of random starting points for theta, theta_tilde and
+lambda in the optimization (default is 32)}
 }
 \value{
-The function returns a list with the five elements "objective" (optimal value of likelihood), "beta" (estimator for beta), "theta", "theta_tilde", "lambda" (estimates for the corresponding parameters).
+The function returns a list with the five elements "objective"
+  (optimal value of likelihood), "beta" (estimator for beta), "theta",
+  "theta_tilde", "lambda" (estimates for the corresponding parameters).
 }
 \description{
-`laguerre_estimator` computes the Laguerre estimator for given degrees m, m_tilde and M. For a detailed description of how the optimisation works we refer to the documentation pdf.
+`laguerre_estimator` computes the Laguerre estimator for given degrees m,
+m_tilde and M. For a detailed description of how the optimisation works we
+refer to the documentation pdf.
 }
 \examples{
 epsilon <- rnorm(500,mean=0,sd=1)

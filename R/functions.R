@@ -825,7 +825,7 @@ likelihood_wrapper_bmtM <- function(par,X,Y,Delta,sigma0,tau,p,m,m_tilde,M) {
 #'
 #' @export
 optimal_quantile_covariance <- function(sample,tau,beta_tau,Sigma,f_TX,f_CX,F_TX,F_CX,Tbounds,Cbounds,K) {
-  p <- length(beta)
+  p <- length(beta_tau)
   Sigma_inv <- solve(Sigma)
 
   ## Approximate Variance

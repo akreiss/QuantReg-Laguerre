@@ -1,18 +1,33 @@
 #' Laguerre Estimator
 #'
-#' `laguerre_estimator` computes the Laguerre estimator for given degrees m, m_tilde and M. For a detailed description of how the optimisation works we refer to the documentation pdf.
+#' `laguerre_estimator` computes the Laguerre estimator for given degrees m,
+#' m_tilde and M. For a detailed description of how the optimisation works we
+#' refer to the documentation pdf.
 #'
 #' @param m,m_tilde Integers which specify the model dimension in the density
-#' @param M Integer which specifies the degree of the heteroskedasticity that is estimated (\code{"M=0"}, the default, fits a homoskedastic model)
-#' @param Cov Matrix with covariates: Every row corresponds to an observation, each column corresponds to a covariate. No column of Cov is allowed to be constant, the intercept is added automatically. If no covariates shall be used, this should be set to NULL, the default.
-#' @param Y Vector of responses, \code{"length(Y)"} must equal \code{"nrow(Cov)"}
-#' @param Delta Vector of censoring indicators, \code{"Delta[i]=1"} means that observation i is not censored, \code{"length(Delta)"} must equal \code{"length(Y)"}
-#' @param sigma0 Intercept that is added to the heteroskedasticity function, default is 0.2.
+#' @param M Integer which specifies the degree of the heteroskedasticity that is
+#'   estimated (\code{"M=0"}, the default, fits a homoskedastic model)
+#' @param Cov Matrix with covariates: Every row corresponds to an observation,
+#'   each column corresponds to a covariate. No column of Cov is allowed to be
+#'   constant, the intercept is added automatically. If no covariates shall be
+#'   used, this should be set to NULL, the default.
+#' @param Y Vector of responses, \code{"length(Y)"} must equal
+#'   \code{"nrow(Cov)"}
+#' @param Delta Vector of censoring indicators, \code{"Delta[i]=1"} means that
+#'   observation i is not censored, \code{"length(Delta)"} must equal
+#'   \code{"length(Y)"}
+#' @param sigma0 Intercept that is added to the heteroskedasticity function,
+#'   default is 0.2.
 #' @param tau Quantile of interest, element of (0,1)
-#' @param starting_beta If provided this is the initial value for beta used for the optimization routine, if FALSE, the default, a starting value is computed by letting \code{"m=m_tilde=0"}
-#' @param trials Number of random starting points for theta, theta_tilde and lambda in the optimization (default is 32)
+#' @param starting_beta If provided this is the initial value for beta used for
+#'   the optimization routine, if FALSE, the default, a starting value is
+#'   computed by letting \code{"m=m_tilde=0"}
+#' @param trials Number of random starting points for theta, theta_tilde and
+#'   lambda in the optimization (default is 32)
 #'
-#' @return The function returns a list with the five elements "objective" (optimal value of likelihood), "beta" (estimator for beta), "theta", "theta_tilde", "lambda" (estimates for the corresponding parameters).
+#' @return The function returns a list with the five elements "objective"
+#'   (optimal value of likelihood), "beta" (estimator for beta), "theta",
+#'   "theta_tilde", "lambda" (estimates for the corresponding parameters).
 #'
 #' @examples
 #' epsilon <- rnorm(500,mean=0,sd=1)
@@ -148,18 +163,32 @@ laguerre_estimator <- function(m,m_tilde,M=0,Cov=NULL,Y,Delta,sigma0=0.2,tau,sta
 
 #' Likelihood for Spherical Coordinates
 #'
-#' `likelihood_polar` computes the likelihood at the provided parameter values (the values are given as angle of spherical coordinates). Optionally the derivatives will be computed too.
+#' `likelihood_polar` computes the likelihood at the provided parameter values
+#' (the values are given as angle of spherical coordinates). Optionally the
+#' derivatives will be computed too.
 #'
 #' @param tau Quantile of interest from the interval (0,1)
 #' @param beta Value for the beta parameter (always in Cartesian coordinates)
-#' @param theta_polar,theta_tilde_polar,lambda_polar Angles in spherical coordinates for the corresponding parameters. The radius is always equal to one. If the 1-dim Cartesian coordinate 1 shall be used, the corresponding parameter has to be set to FALSE.
-#' @param X Matrix containing covariates to be used, first column must be an intercept. Each row corresponds to an observation, each column corresponds to a covariate. The number of columns must equal the length of beta.
-#' @param Y Scalar vector of observations, its lenght must equal the number of rows in X.
-#' @param Delta Vector of zeros and ones of the same length as Y. A one indicates that the corresponding observation is uncensored.
+#' @param theta_polar,theta_tilde_polar,lambda_polar Angles in spherical
+#'   coordinates for the corresponding parameters. The radius is always equal to
+#'   one. If the 1-dim Cartesian coordinate 1 shall be used, the corresponding
+#'   parameter has to be set to FALSE.
+#' @param X Matrix containing covariates to be used, first column must be an
+#'   intercept. Each row corresponds to an observation, each column corresponds
+#'   to a covariate. The number of columns must equal the length of beta.
+#' @param Y Scalar vector of observations, its lenght must equal the number of
+#'   rows in X.
+#' @param Delta Vector of zeros and ones of the same length as Y. A one
+#'   indicates that the corresponding observation is uncensored.
 #' @param sigma0 Value to be added to te heteroskedasticity function.
-#' @param derivative If TRUE the derivatives with respect to beta and all variables are returned which do not equal FALSE
+#' @param derivative If TRUE the derivatives with respect to beta and all
+#'   variables are returned which do not equal FALSE
 #'
-#' @return If \code{"derivative=FALSE"} the value of the likelihood is returned. Otherwise a list is returned with the element "objective" which contains the likelihood and a vector "gradient" which concatenates all gradients beginning with beta, theta, theta_tilde, lambda. If some variable is specified as FALSE, it is ommited in the gradient.
+#' @return If \code{"derivative=FALSE"} the value of the likelihood is returned.
+#'   Otherwise a list is returned with the element "objective" which contains
+#'   the likelihood and a vector "gradient" which concatenates all gradients
+#'   beginning with beta, theta, theta_tilde, lambda. If some variable is
+#'   specified as FALSE, it is ommited in the gradient.
 #'
 #' @examples epsilon <- rnorm(500,mean=0,sd=1)
 #' x     <- runif(500,0-1,1)
@@ -243,22 +272,35 @@ likelihood_polar <- function(tau,beta,theta_polar,theta_tilde_polar,lambda_polar
 
 #' Cross-Validation Criterion
 #'
-#' `cv_criterion` Computes the cross-validation criterion for given model dimensions m, m_tilde and M.
+#' `cv_criterion` Computes the cross-validation criterion for given model
+#' dimensions m, m_tilde and M.
 #'
-#' Note that the splitting of the data is random and happens in this function. Therefore consecutive calls of this function will yield different results.
+#' Note that the splitting of the data is random and happens in this function.
+#' Therefore consecutive calls of this function will yield different results.
 #'
 #' @param m,m_tilde Integers which specify the model dimension in the density.
-#' @param M Integer which specifies the degree of the heteroskedasticity that is estimated (\code{"M=0"} fits a homoskedastic model)
-#' @param Cov Matrix with covariates: Every row corresponds to an observation, each column corresponds to a covariate. No column of Cov is allowed to be constant, the intercept is added automatically. If no covariates shall be used, this should be set to NULL.
-#' @param Y Vector of responses, \code{"length(Y)"} must equal \code{"nrow(Cov)"}
-#' @param Delta Vector of censoring indicators, \code{"Delta[i]=1"} means that observation i is not censored, \code{"length(Delta)"} must equal \code{"length(Y)"}
+#' @param M Integer which specifies the degree of the heteroskedasticity that is
+#'   estimated (\code{"M=0"} fits a homoskedastic model)
+#' @param Cov Matrix with covariates: Every row corresponds to an observation,
+#'   each column corresponds to a covariate. No column of Cov is allowed to be
+#'   constant, the intercept is added automatically. If no covariates shall be
+#'   used, this should be set to NULL.
+#' @param Y Vector of responses, \code{"length(Y)"} must equal
+#'   \code{"nrow(Cov)"}
+#' @param Delta Vector of censoring indicators, \code{"Delta[i]=1"} means that
+#'   observation i is not censored, \code{"length(Delta)"} must equal
+#'   \code{"length(Y)"}
 #' @param sigma0 Intercept that is added to the heteroskedasticity function.
 #' @param tau Quantile of interest, element of (0,1)
-#' @param starting_beta If provided this is the initial value for beta used for the optimization routine, if FALSE, a starting value is computed by letting \code{"m=m_tilde=0"}
-#' @param trials Number of random starting points for theta, theta_tilde and lambda in the optimization
+#' @param starting_beta If provided this is the initial value for beta used for
+#'   the optimization routine, if FALSE, a starting value is computed by letting
+#'   \code{"m=m_tilde=0"}
+#' @param trials Number of random starting points for theta, theta_tilde and
+#'   lambda in the optimization
 #' @param nfolds The number of folds to be used in the cross-validation.
 #'
-#' @return The value of the cross-validation criterion divided by \code{"nfolds"}.
+#' @return The value of the cross-validation criterion divided by
+#'   \code{"nfolds"}.
 #'
 #' @examples epsilon <- rnorm(500,mean=0,sd=1)
 #' x     <- runif(500,0-1,1)
@@ -320,22 +362,45 @@ CV_criterion <- function(m,m_tilde,M,Cov,Y,Delta,sigma0,tau,starting_beta,trials
 
 #' Cross Validation
 #'
-#' `laguerre_cross_validation` performs Cross-Validation for the dimensions of the approximation m, m_tilde and M.
+#' `laguerre_cross_validation` performs Cross-Validation for the dimensions of
+#' the approximation m, m_tilde and M.
 #'
-#' The function [laguerre_estimator()] is repeatedly called with different values for \code{"m"}, \code{"m_tilde"} and \code{"M"}. The other values are always the same as specified in the call of this function. Note that the data splitting itself happens in the function [CV_criterion()] as described there. This functions is just an optimization algorithm for \code{"CV_criterion"}.
+#' The function [laguerre_estimator()] is repeatedly called with different
+#' values for \code{"m"}, \code{"m_tilde"} and \code{"M"}. The other values are
+#' always the same as specified in the call of this function. Note that the data
+#' splitting itself happens in the function [CV_criterion()] as described there.
+#' This functions is just an optimization algorithm for \code{"CV_criterion"}.
 #'
-#' @param Y Vector of responses, \code{"length(Y)"} must equal \code{"nrow(Cov)"}
-#' @param Delta Vector of censoring indicators, \code{"Delta[i]=1"} means that observation i is not censored, \code{"length(Delta)"} must equal \code{"length(Y)"}
+#' @param Y Vector of responses, \code{"length(Y)"} must equal
+#'   \code{"nrow(Cov)"}
+#' @param Delta Vector of censoring indicators, \code{"Delta[i]=1"} means that
+#'   observation i is not censored, \code{"length(Delta)"} must equal
+#'   \code{"length(Y)"}
 #' @param tau Quantile of interest, element of (0,1)
 #' @param sigma0 Intercept that is added to the heteroskedasticity function.
-#' @param print.level If 0 (the default) no status information is printed, for all other values the current step is printed.
-#' @param maxdim Integer dimension at which the optimisation shall stop at the latest: If either m, m_tilde or M gets larger than maxdim, the optimisation is stopped and the current values of m, m_tilde and M are returned. The default is 10.
-#' @param Cov Matrix with covariates: Every row corresponds to an observation, each column corresponds to a covariate. No column of \code{"Cov"} is allowed to be constant, the intercept is added automatically. If no covariates shall be used, this should be set to NULL (the default).
-#' @param starting_beta If provided this is the initial value for beta used for the optimization routine, if FALSE (the default), a starting value is computed by letting \code{"m=m_tilde=0"}
-#' @param trials Number of random starting points for theta, theta_tilde and lambda in the optimization (the default is 32).
-#' @param nfolds The number of folds to be used in the cross-validation (the default is 5).
+#' @param print.level If 0 (the default) no status information is printed, for
+#'   all other values the current step is printed.
+#' @param maxdim Integer dimension at which the optimisation shall stop at the
+#'   latest: If either m, m_tilde or M gets larger than maxdim, the optimisation
+#'   is stopped and the current values of m, m_tilde and M are returned. The
+#'   default is 10.
+#' @param Cov Matrix with covariates: Every row corresponds to an observation,
+#'   each column corresponds to a covariate. No column of \code{"Cov"} is
+#'   allowed to be constant, the intercept is added automatically. If no
+#'   covariates shall be used, this should be set to NULL (the default).
+#' @param starting_beta If provided this is the initial value for beta used for
+#'   the optimization routine, if FALSE (the default), a starting value is
+#'   computed by letting \code{"m=m_tilde=0"}
+#' @param trials Number of random starting points for theta, theta_tilde and
+#'   lambda in the optimization (the default is 32).
+#' @param nfolds The number of folds to be used in the cross-validation (the
+#'   default is 5).
 #'
-#' @return List of five elements: m, m_tilde and M contain the found degrees and est contains the output of \code{"laguerre_estimator"} for these degrees. The element path is a matrix od four columns: The first three columns contain values of m, m_tilde and M and the fourth column show the corresponding value of the cross-validation criterion.
+#' @return List of five elements: m, m_tilde and M contain the found degrees and
+#'   est contains the output of \code{"laguerre_estimator"} for these degrees.
+#'   The element path is a matrix od four columns: The first three columns
+#'   contain values of m, m_tilde and M and the fourth column show the
+#'   corresponding value of the cross-validation criterion.
 #'
 #' @examples epsilon <- rnorm(500,mean=0,sd=1)
 #' x     <- runif(500,0-1,1)
@@ -427,19 +492,45 @@ laguerre_cross_validation <- function(Y,Delta,tau,sigma0,print.level=0,maxdim=10
 
 #' Bootstrap Confidence Intervals for Laguerre Quantile Estimator
 #'
-#' `laguerre_bootstrap` computes bootstrap confidence intervals for the Laguerre Quantile estimator. This functions requires that `laguerre_cross_validation` has been called previously. Within this function bootstrap replicates are generated and the model is refitted on the sub-sample using the same model dimensions as provided in the fit from `laguerre_cross_validation`.
+#' `laguerre_bootstrap` computes bootstrap confidence intervals for the Laguerre
+#' Quantile estimator. This functions requires that `laguerre_cross_validation`
+#' has been called previously. Within this function bootstrap replicates are
+#' generated and the model is refitted on the sub-sample using the same model
+#' dimensions as provided in the fit from `laguerre_cross_validation`.
 #'
-#' @param Y Vector of responses, \code{"length(Y)"} must equal \code{"nrow(Cov)"}
-#' @param Delta Vector of censoring indicators, \code{"Delta[i]=1"} means that observation i is not censored, \code{"length(Delta)"} must equal \code{"length(Y)"}
-#' @param Cov Matrix with covariates: Every row corresponds to an observation, each column corresponds to a covariate. No column of \code{"Cov"} is allowed to be constant, the intercept is added automatically. If no covariates shall be used, this should be set to NULL (the default).
+#' @param Y Vector of responses, \code{"length(Y)"} must equal
+#'   \code{"nrow(Cov)"}
+#' @param Delta Vector of censoring indicators, \code{"Delta[i]=1"} means that
+#'   observation i is not censored, \code{"length(Delta)"} must equal
+#'   \code{"length(Y)"}
+#' @param Cov Matrix with covariates: Every row corresponds to an observation,
+#'   each column corresponds to a covariate. No column of \code{"Cov"} is
+#'   allowed to be constant, the intercept is added automatically. If no
+#'   covariates shall be used, this should be set to NULL (the default).
 #' @param tau Quantile of interest, element of (0,1)
 #' @param sigma0 Intercept that is added to the heteroskedasticity function.
-#' @param CV_out An object returned by `laguerre_cross_validation` which was called using the same dataset.
-#' @param level Confidence level to be used in the confidence intervals, the default is 0.05.
+#' @param CV_out An object returned by `laguerre_cross_validation` which was
+#'   called using the same dataset.
+#' @param level Confidence level to be used in the confidence intervals, the
+#'   default is 0.05.
 #' @param B Number of boostrap replicates (defaul is 200)
-#' @param trials Number of random starting points for theta, theta_tilde and lambda in the optimization (the default is 32).
+#' @param trials Number of random starting points for theta, theta_tilde and
+#'   lambda in the optimization (the default is 32).
 #'
-#' @return The function returns a list containing the elements `conf_int`, `sds`, `bias` and `quantiles`. The element `conf_int` is a matrix of two columns and each row corresponds to one covariate (including the intercept which is in the first row), the rows contain the lower and upper bounds for the respective element-wise confidence intervals build by estimating asymptotic variances and biases, i.e., the probability that the corresponding true parameter lies in the respective interval equals marginally 1-level. The entry `sds` contains the estimated standard deviations of sqrt(n)*(beta_hat-beta0), where beta_hat denotes the estimator and beta0 the true parameter. Similarly, `bias` is a vector containing the estimated biases, i.e., an estimate for E(beta_hat)-beta_0. `quantiles` is a matrix where each row corresponds to one entry of beta_0 and two columns. The rows contain confidence intervals based on the quantiles of the bootstrap replicates.
+#' @return The function returns a list containing the elements `conf_int`,
+#'   `sds`, `bias` and `quantiles`. The element `conf_int` is a matrix of two
+#'   columns and each row corresponds to one covariate (including the intercept
+#'   which is in the first row), the rows contain the lower and upper bounds for
+#'   the respective element-wise confidence intervals build by estimating
+#'   asymptotic variances and biases, i.e., the probability that the
+#'   corresponding true parameter lies in the respective interval equals
+#'   marginally 1-level. The entry `sds` contains the estimated standard
+#'   deviations of sqrt(n)*(beta_hat-beta0), where beta_hat denotes the
+#'   estimator and beta0 the true parameter. Similarly, `bias` is a vector
+#'   containing the estimated biases, i.e., an estimate for E(beta_hat)-beta_0.
+#'   `quantiles` is a matrix where each row corresponds to one entry of beta_0
+#'   and two columns. The rows contain confidence intervals based on the
+#'   quantiles of the bootstrap replicates.
 #'
 #' @examples n <- 200 # Sample Size
 #' tau <- 0.5 # Quantile Level
@@ -500,6 +591,51 @@ laguerre_bootstrap <- function(Y,Delta,Cov=NULL,tau,sigma0,CV_out,level=0.05,B=2
   return(list(conf_int=conf_int,sds=sds,bias=bias,quantiles=quantiles))
 }
 
+
+#' @export
+optimal_quantile_covariance <- function(sample,tau,beta_tau,Sigma,f_TX,f_CX,F_TX,F_CX,Tbounds,Cbounds,K) {
+  p <- length(beta)
+  ## Approximate expecations
+  Expectation <- matrix(0,ncol=p,nrow=p)
+  for(k in 1:K) {
+    ## Draw a sample
+    YDeltaX <- sample()
+    Y <- YDeltaX[1]
+    Delta <- YDeltaX[2]
+    X <- YDeltaX[3:(3+p)]
+    Xbeta <- sum(X*beta_tau)
+
+    ## Compute J
+    evaluateJ <- min(c(Y,Xbeta))
+    if(evaluateJ<Cbounds[1]) {
+      J <- -1/(1-F_TX(evaluateJ,X))
+    } else {
+      helper_function <- function(t) {return(f_TX(t,X)/((1-F_TX(t,X))^2*(1-F_CX(t,X))))}
+      if(evaluateJ<=Tbounds[2]) {
+        if(u<=Tbounds[1]) {
+          J <- 0
+        } else {
+          J <- -integrate(helper_function,Tbounds[1],evaluateJ)$value
+        }
+      } else {
+        J <- -integrate(helper_function,Tbounds[1],Tbounds[2])$value
+      }
+    }
+
+    ## Update expectation
+    if(Y<=Xbeta) {
+      Ind <- 1
+    } else {
+      Ind <- 0
+    }
+    Expectation <- Expectation+X%*%t(X)*(Delta*Ind/((1-F_TX(Y,X))*(1-F_CX(Y,X)))+J)^2/f_TX(Xbeta,X)^2/K
+  }
+
+  ## Compute Variance
+  V <- (1-tau)^2*solve(Sigma)%*%Expectation%*%solve(Sigma)
+
+  return(V)
+}
 
 
 
@@ -580,6 +716,161 @@ likelihood_wrapper_bmtM <- function(par,X,Y,Delta,sigma0,tau,p,m,m_tilde,M) {
 
   return(list("objective"=-out$objective,"gradient"=-out$gradient))
 }
+
+#' Compute the Optimal Variance for a Give Quantile-Regression Problem
+#'
+#' `optimal_quantile_covariance` computes the optimal covariance matrix for a
+#' given quantile regression problem in the sense of the convolution theorem in
+#' the framework of semi-parametric efficiency.
+#'
+#' The theory on which the implementation is based is provided in Corollary 3.6
+#' of the paper. The expectation is approximated by using Monte Carlo
+#' simulations. The functions also output the variance of these estimates.
+#' Increasing the number of repetitions `K` should increase the precision. See
+#' the description of the output for details. Th function is therefore
+#' stochastic and different runs yield different results if one does not control
+#' for the random seed.
+#'
+#' @param sample A function that samples for the model of interest. The function
+#'   should not take any arguments and has to return a vector with the first
+#'   entr< being the realisation of Y, the second entry the realisation of
+#'   Delta, and the remaining p entries contain a realisation of X.
+#'
+#' @param tau Quantile of interest: a number between 0 and 1
+#' @param beta_tau The true quantile parameter: a p-dimensional vector
+#' @param Sigma The true second moment matrix of X, i.e., E(XX')
+#' @param f_TX,F_TX Conditional density and distribution function of T given X.
+#'   Both functions have to allow for exactly two arguments: `t` and `X`. `t` is
+#'   a vector of the points at which the density or distribution function is
+#'   evaluated. `X` is a single realization of X on which the density or the
+#'   distribution function is conditioned. The output of both functions must be
+#'   a vector of the same lenght as `t` that contains the evaluations of the
+#'   density/distribution function of the corresponding entries of `t`
+#'   conditionally on `X`.
+#' @param f_CX,F_CX Conditional density and distribution function of C given X.
+#'   Their syntax must be the same as the sybtax described for `f_TX` and
+#'   `F_TX`.
+#' @param Tbounds,Cbounds Vectors of length 2 which contain the support
+#'   endpoints of T and C, respectively. That is, T is guaranteed to lie in the
+#'   bounds provided in `Tbounds` and similarly for `Cbounds`. It is allowed to
+#'   provide `Inf` and `-Inf` as endpoints.
+#' @param K Number of Monte Carlo repetitions used to approximate the
+#'   expectation.
+#'
+#' @return The function returns a list containing two elements: `var` and `sd`.
+#'   `var` is the estimate for the covariance matrix. `sd` is a matrix of the
+#'   same dimension as `var`. Its entries contain the standard deviations of the
+#'   corresponding entries in `var` due to the Monte Carlo approximation.
+#'
+#' @examples beta <- c(2,1) # True quantile parameter
+#' tau <- 0.5 # True quantile
+#' Sigma <- matrix(c(1,0,0,1),ncol=2)
+#'
+#' ## This samples from DGP 4 of the paper
+#' sample <- function() {
+#'  X <- c(1,rnorm(1))
+#'  nu <- 4*(1+exp(1.5*X[2]))
+#'  epsilon <- rt(1,df=nu)-qt(tau,df=nu)
+#'  T <- beta[1]+X[2]*beta[2]+0.5*epsilon
+#'  C <- runif(1,min=0,max=7)
+#'  Y <- min(c(T,C))
+#'  if(T<=C) {
+#'    Delta <- 1
+#'  } else {
+#'    Delta <- 0
+#'  }
+#'  return(c(Y,Delta,X))
+#' }
+#'
+#' ## Distribution of T given X
+#' f_TX <- function(t,X) {
+#'  Xbeta <- sum(X*beta)
+#'  nu <- 4*(1+exp(1.5*X[2]))
+#'  return(2*dt(2*(t-Xbeta),df=nu))
+#' }
+#' F_TX <- function(t,X) {
+#'  Xbeta <- sum(X*beta)
+#'  nu <- 4*(1+exp(1.5*X[2]))
+#'  return(pt(2*(t-Xbeta),df=nu))
+#' }
+#' Tbounds <- c(-Inf,Inf)
+#' ## Distribution of C given X
+#' f_CX <- function(t,X) {
+#'  return(dunif(t,min=0,max=7))
+#' }
+#' F_CX <- function(t,X) {
+#'  return(punif(t,min=0,max=7))
+#' }
+#' Cbounds <- c(0,7)
+#'
+#' ## Compute optimal variance
+#' out <- optimal_quantile_covariance(sample,tau,beta,Sigma,f_TX,f_CX,F_TX,F_CX,Tbounds,Cbounds,K=10000)
+#'cat("Estimated Covariance Matrix:\n")
+#' print(out$var)
+#'
+#' n <- 200
+#' cat("Estimated Optimal Standard Deviations for n=200:\n")
+#' estimated_sds <- sqrt(diag(out$var)/n)
+#' print(estimated_sds)
+#'
+#' cat("SD for above estimates for n=200:\n")
+#' SDs <- diag(out$sd)*sqrt(1/(4*n*diag(out$var)))
+#' print(SDs)
+#'
+#' alpha <- 0.01
+#' q <- qnorm(1-alpha/2)
+#' cat("Confidence areas: \n")
+#' print(estimated_sds-q*SDs)
+#' print(estimated_sds+q*SDs)
+#'
+#' @export
+optimal_quantile_covariance <- function(sample,tau,beta_tau,Sigma,f_TX,f_CX,F_TX,F_CX,Tbounds,Cbounds,K) {
+  p <- length(beta)
+  Sigma_inv <- solve(Sigma)
+
+  ## Approximate Variance
+  V   <- matrix(0,ncol=p,nrow=p)
+  Vsq <- matrix(0,ncol=p,nrow=p)
+  for(k in 1:K) {
+    ## Draw a sample
+    YDeltaX <- sample()
+    Y <- YDeltaX[1]
+    Delta <- YDeltaX[2]
+    X <- YDeltaX[3:(2+p)]
+    Xbeta <- sum(X*beta_tau)
+
+    ## Compute J
+    evaluateJ <- min(c(Y,Xbeta))
+    if(evaluateJ<=Tbounds[1]) {
+      J <- 0
+    } else if(evaluateJ<=Tbounds[2]) {
+      if(evaluateJ<=Cbounds[1]) {
+        J <- 1-1/(1-F_TX(evaluateJ,X))
+      } else {
+        helper_function <- function(t) {return(f_TX(t,X)/((1-F_TX(t,X))^2*(1-F_CX(t,X))))}
+        J <- -integrate(helper_function,Tbounds[1],evaluateJ)$value
+      }
+    } else {
+      stop("Your sampler produced a survival time larger than the provided upper bound!")
+    }
+
+    ## Compute realisation of expectation
+    if(Y<=Xbeta) {
+      first_term <- Delta/((1-F_TX(Y,X))*(1-F_CX(Y,X)))
+    } else {
+      first_term <- 0
+    }
+    Expectation_realisation <- X%*%t(X)*(first_term+J)^2/f_TX(Xbeta,X)^2
+
+    ## Update Variance
+    V_update <- (1-tau)^2*Sigma_inv%*%Expectation_realisation%*%Sigma_inv
+    V <- V+V_update/K
+    Vsq <- Vsq+V_update^2/K
+  }
+
+  return(list(var=V,sd=sqrt((Vsq-V^2)/K)))
+}
+
 
 
 

@@ -21,32 +21,45 @@ CV_criterion(
 \arguments{
 \item{m, m_tilde}{Integers which specify the model dimension in the density.}
 
-\item{M}{Integer which specifies the degree of the heteroskedasticity that is estimated (\code{"M=0"} fits a homoskedastic model)}
+\item{M}{Integer which specifies the degree of the heteroskedasticity that is
+estimated (\code{"M=0"} fits a homoskedastic model)}
 
-\item{Cov}{Matrix with covariates: Every row corresponds to an observation, each column corresponds to a covariate. No column of Cov is allowed to be constant, the intercept is added automatically. If no covariates shall be used, this should be set to NULL.}
+\item{Cov}{Matrix with covariates: Every row corresponds to an observation,
+each column corresponds to a covariate. No column of Cov is allowed to be
+constant, the intercept is added automatically. If no covariates shall be
+used, this should be set to NULL.}
 
-\item{Y}{Vector of responses, \code{"length(Y)"} must equal \code{"nrow(Cov)"}}
+\item{Y}{Vector of responses, \code{"length(Y)"} must equal
+\code{"nrow(Cov)"}}
 
-\item{Delta}{Vector of censoring indicators, \code{"Delta[i]=1"} means that observation i is not censored, \code{"length(Delta)"} must equal \code{"length(Y)"}}
+\item{Delta}{Vector of censoring indicators, \code{"Delta[i]=1"} means that
+observation i is not censored, \code{"length(Delta)"} must equal
+\code{"length(Y)"}}
 
 \item{sigma0}{Intercept that is added to the heteroskedasticity function.}
 
 \item{tau}{Quantile of interest, element of (0,1)}
 
-\item{starting_beta}{If provided this is the initial value for beta used for the optimization routine, if FALSE, a starting value is computed by letting \code{"m=m_tilde=0"}}
+\item{starting_beta}{If provided this is the initial value for beta used for
+the optimization routine, if FALSE, a starting value is computed by letting
+\code{"m=m_tilde=0"}}
 
-\item{trials}{Number of random starting points for theta, theta_tilde and lambda in the optimization}
+\item{trials}{Number of random starting points for theta, theta_tilde and
+lambda in the optimization}
 
 \item{nfolds}{The number of folds to be used in the cross-validation.}
 }
 \value{
-The value of the cross-validation criterion divided by \code{"nfolds"}.
+The value of the cross-validation criterion divided by
+  \code{"nfolds"}.
 }
 \description{
-`cv_criterion` Computes the cross-validation criterion for given model dimensions m, m_tilde and M.
+`cv_criterion` Computes the cross-validation criterion for given model
+dimensions m, m_tilde and M.
 }
 \details{
-Note that the splitting of the data is random and happens in this function. Therefore consecutive calls of this function will yield different results.
+Note that the splitting of the data is random and happens in this function.
+Therefore consecutive calls of this function will yield different results.
 }
 \examples{
 epsilon <- rnorm(500,mean=0,sd=1)

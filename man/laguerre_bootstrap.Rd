@@ -17,29 +17,55 @@ laguerre_bootstrap(
 )
 }
 \arguments{
-\item{Y}{Vector of responses, \code{"length(Y)"} must equal \code{"nrow(Cov)"}}
+\item{Y}{Vector of responses, \code{"length(Y)"} must equal
+\code{"nrow(Cov)"}}
 
-\item{Delta}{Vector of censoring indicators, \code{"Delta[i]=1"} means that observation i is not censored, \code{"length(Delta)"} must equal \code{"length(Y)"}}
+\item{Delta}{Vector of censoring indicators, \code{"Delta[i]=1"} means that
+observation i is not censored, \code{"length(Delta)"} must equal
+\code{"length(Y)"}}
 
-\item{Cov}{Matrix with covariates: Every row corresponds to an observation, each column corresponds to a covariate. No column of \code{"Cov"} is allowed to be constant, the intercept is added automatically. If no covariates shall be used, this should be set to NULL (the default).}
+\item{Cov}{Matrix with covariates: Every row corresponds to an observation,
+each column corresponds to a covariate. No column of \code{"Cov"} is
+allowed to be constant, the intercept is added automatically. If no
+covariates shall be used, this should be set to NULL (the default).}
 
 \item{tau}{Quantile of interest, element of (0,1)}
 
 \item{sigma0}{Intercept that is added to the heteroskedasticity function.}
 
-\item{CV_out}{An object returned by `laguerre_cross_validation` which was called using the same dataset.}
+\item{CV_out}{An object returned by `laguerre_cross_validation` which was
+called using the same dataset.}
 
-\item{level}{Confidence level to be used in the confidence intervals, the default is 0.05.}
+\item{level}{Confidence level to be used in the confidence intervals, the
+default is 0.05.}
 
 \item{B}{Number of boostrap replicates (defaul is 200)}
 
-\item{trials}{Number of random starting points for theta, theta_tilde and lambda in the optimization (the default is 32).}
+\item{trials}{Number of random starting points for theta, theta_tilde and
+lambda in the optimization (the default is 32).}
 }
 \value{
-The function returns a list containing the elements `conf_int`, `sds`, `bias` and `quantiles`. The element `conf_int` is a matrix of two columns and each row corresponds to one covariate (including the intercept which is in the first row), the rows contain the lower and upper bounds for the respective element-wise confidence intervals build by estimating asymptotic variances and biases, i.e., the probability that the corresponding true parameter lies in the respective interval equals marginally 1-level. The entry `sds` contains the estimated standard deviations of sqrt(n)*(beta_hat-beta0), where beta_hat denotes the estimator and beta0 the true parameter. Similarly, `bias` is a vector containing the estimated biases, i.e., an estimate for E(beta_hat)-beta_0. `quantiles` is a matrix where each row corresponds to one entry of beta_0 and two columns. The rows contain confidence intervals based on the quantiles of the bootstrap replicates.
+The function returns a list containing the elements `conf_int`,
+  `sds`, `bias` and `quantiles`. The element `conf_int` is a matrix of two
+  columns and each row corresponds to one covariate (including the intercept
+  which is in the first row), the rows contain the lower and upper bounds for
+  the respective element-wise confidence intervals build by estimating
+  asymptotic variances and biases, i.e., the probability that the
+  corresponding true parameter lies in the respective interval equals
+  marginally 1-level. The entry `sds` contains the estimated standard
+  deviations of sqrt(n)*(beta_hat-beta0), where beta_hat denotes the
+  estimator and beta0 the true parameter. Similarly, `bias` is a vector
+  containing the estimated biases, i.e., an estimate for E(beta_hat)-beta_0.
+  `quantiles` is a matrix where each row corresponds to one entry of beta_0
+  and two columns. The rows contain confidence intervals based on the
+  quantiles of the bootstrap replicates.
 }
 \description{
-`laguerre_bootstrap` computes bootstrap confidence intervals for the Laguerre Quantile estimator. This functions requires that `laguerre_cross_validation` has been called previously. Within this function bootstrap replicates are generated and the model is refitted on the sub-sample using the same model dimensions as provided in the fit from `laguerre_cross_validation`.
+`laguerre_bootstrap` computes bootstrap confidence intervals for the Laguerre
+Quantile estimator. This functions requires that `laguerre_cross_validation`
+has been called previously. Within this function bootstrap replicates are
+generated and the model is refitted on the sub-sample using the same model
+dimensions as provided in the fit from `laguerre_cross_validation`.
 }
 \examples{
 n <- 200 # Sample Size

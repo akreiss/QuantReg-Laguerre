@@ -848,7 +848,7 @@ optimal_quantile_covariance <- function(sample,tau,beta_tau,Sigma,f_TX,f_CX,F_TX
         J <- 1-1/(1-F_TX(evaluateJ,X))
       } else {
         helper_function <- function(t) {return(f_TX(t,X)/((1-F_TX(t,X))^2*(1-F_CX(t,X))))}
-        J <- -integrate(helper_function,Tbounds[1],evaluateJ)$value
+        J <- -stats::integrate(helper_function,Tbounds[1],evaluateJ)$value
       }
     } else {
       stop("Your sampler produced a survival time larger than the provided upper bound!")
